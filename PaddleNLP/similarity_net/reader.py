@@ -133,17 +133,19 @@ class SimNetProcessor(object):
         """
         with open(self.args.infer_data_dir, "r") as file:
             for line in file:
-                query, title = line.strip().split("\t")
-                if len(query) == 0 or len(title) == 0:
+                title_queries = line.strip().split("\t\t")[-1].split("\t")
+                title = title_queries[0]
+                queries = title_queries[1:]
+                if any(len(query) == 0 for query in queries) or len(title) == 0:
                     logging.warning("line not match format in test file")
                     continue
-                query = [self.vocab[word] for word in query.split(" ") if word in self.vocab]
+                queries = [[self.vocab[word] for word in query.split(" ") if word in self.vocab] for query in queries]
                 title = [self.vocab[word] for word in title.split(" ") if word in self.vocab]
-                if len(query) == 0:
-                    query = [0]
+                queries = [[0] if len(query) == 0 else query for query in queries]
                 if len(title) == 0:
                     title = [0]
-                yield [query, title]
+                for query in queries:
+                    yield [query, title]
 
     def get_infer_data(self):
         """
@@ -151,8 +153,10 @@ class SimNetProcessor(object):
         """
         with open(self.args.infer_data_dir, "r") as file:
             for line in file:
-                query, title = line.strip().split("\t")
-                if len(query) == 0 or len(title) == 0:
+                title_queries = line.strip().split("\t\t")[-1].split("\t")
+                title = title_queries[0]
+                queries = title_queries[1:]
+                if any(len(query) == 0 for query in queries) or len(title) == 0:
                     logging.warning("line not match format in test file")
                     continue
                 yield line.strip()
