@@ -133,7 +133,7 @@ class SimNetProcessor(object):
         """
         with open(self.args.infer_data_dir, "r") as file:
             for line in file:
-                title_queries = line.strip().split("\t\t")[-1].split("\t")
+                title_queries = line.strip().split("\001")[-1].split("\t")
                 title = title_queries[0]
                 queries = title_queries[1:]
                 if any(len(query) == 0 for query in queries) or len(title) == 0:
@@ -153,7 +153,7 @@ class SimNetProcessor(object):
         """
         with open(self.args.infer_data_dir, "r") as file:
             for line in file:
-                title_queries = line.strip().split("\t\t")[-1].split("\t")
+                title_queries = line.strip().split("\001")[-1].split("\t")
                 title = title_queries[0]
                 queries = title_queries[1:]
                 if any(len(query) == 0 for query in queries) or len(title) == 0:

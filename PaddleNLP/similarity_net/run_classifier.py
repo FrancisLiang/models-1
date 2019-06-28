@@ -57,6 +57,7 @@ data_g.add_arg("infer_data_dir", str, None, "Directory path to infer data.")
 data_g.add_arg("vocab_path", str, None, "Vocabulary path.")
 data_g.add_arg("batch_size", int, 32,
                "Total examples' number in batch for training.")
+data_g.add_arg("query_num", int, 1, "Number of queries.")
 
 run_type_g = utils.ArgumentGroup(parser, "run_type", "running type options.")
 run_type_g.add_arg("use_cuda", bool, False, "If set, use GPU for training.")
@@ -422,9 +423,10 @@ def infer(args):
                 map(lambda item: str((item[0] + 1) / 2), output[1]))
         else:
             preds_list += map(lambda item: str(np.argmax(item)), output[1])
+    preds_list = [preds_list[index: index + args.query_num] for index in range(0, len(preds_list), args.query_num)]
     with open(args.infer_result_path, "w") as infer_file:
         for _data, _pred in zip(simnet_process.get_infer_data(), preds_list):
-            infer_file.write(_data + "\t" + _pred + "\n")
+            infer_file.write(_data + "\t" + "\t".join(_pred) + "\n")
     logging.info("infer result saved in %s" %
                  os.path.join(os.getcwd(), args.infer_result_path))
 
